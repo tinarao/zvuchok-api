@@ -1,0 +1,34 @@
+﻿using Microsoft.Extensions.ObjectPool;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace api.Models
+{
+    public class Sample
+    {
+        public int Id { get; set; }
+        public required string Name { get; set; }
+        public required string Slug { get; set; }
+        public string? Description { get; set; }
+        public float DurationMs { get; set; }
+        public int[] Peaks { get; set; } = [];
+
+        public List<string> Tags { get; set; } = [];
+        public List<string> Genres { get; set; } = [];
+
+        public SamplePack? SamplePack { get; set; }
+        public int? SamplePackId { get; set; }
+
+        public required User Author { get; set; }
+        public required int AuthorId { get; set; }
+
+        public int Downloads { get; set; } = 0;
+        public int Likes { get; set; } = 0;
+        public bool IsFeatured { get; set; } = false;
+        public bool IsOnSale { get; set; } = false;
+        public bool IsFree { get; set; } = true;
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedAt { get; set; }
+
+    }
+}
