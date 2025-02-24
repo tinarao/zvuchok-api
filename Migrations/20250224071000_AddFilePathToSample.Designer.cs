@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Db;
 
@@ -10,9 +11,11 @@ using api.Db;
 namespace api.Migrations
 {
     [DbContext(typeof(ZvuchokContext))]
-    partial class ZvuchokContextModelSnapshot : ModelSnapshot
+    [Migration("20250224071000_AddFilePathToSample")]
+    partial class AddFilePathToSample
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
@@ -96,7 +99,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Samples", (string)null);
+                    b.ToTable("Samples");
                 });
 
             modelBuilder.Entity("api.Models.SamplePack", b =>
@@ -146,7 +149,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SamplePacks", (string)null);
+                    b.ToTable("SamplePacks");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>
@@ -185,7 +188,7 @@ namespace api.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("api.Models.Sample", b =>
@@ -244,7 +247,7 @@ namespace api.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
