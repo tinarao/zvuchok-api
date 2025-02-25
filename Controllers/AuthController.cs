@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using api.Db;
 using api.Models;
+using api.Services.AuthService;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -14,29 +15,38 @@ namespace api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(ZvuchokContext context) : ControllerBase
+    public class AuthController(IAuthService authService) : ControllerBase
     {
 
-        private readonly ZvuchokContext _context = context;
+        private readonly IAuthService _authService = authService;
 
         [HttpGet("verify")]
         public async Task<ActionResult> Verify()
         {
-            var isAuthenticated = HttpContext.User.Identity.IsAuthenticated;
-            if (!isAuthenticated || HttpContext.User.Identity == null)
+            if (HttpContext.User.Identity is null)
+            {
+                return Unauthorized();
+            }
+
+            if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return Unauthorized();
             }
 
             var username = HttpContext.User.Identity.Name;
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user is null)
+            if (username is null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await _authService.Verify(username);
+            if (result.User is null)
             {
                 await HttpContext.SignOutAsync();
                 return Unauthorized();
             }
 
-            return Ok(user);
+            return Ok(result.User);
         }
 
         [HttpPost("register")]
@@ -45,42 +55,16 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return UnprocessableEntity("Некорректный запрос");
             }
 
-            var duplicate = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == dto.Username || u.Credentials.Email == dto.Email || (u.Credentials.PhoneNumber != null && u.Credentials.PhoneNumber == dto.PhoneNumber));
-
-            if (duplicate != null)
+            var result = await _authService.Register(dto);
+            if (result.User is null)
             {
-                return BadRequest("Пользователь с такими данными уже существует!");
+                return BadRequest("Пользователь с такими данными уже существует");
             }
 
-            var slug = new SlugHelper().GenerateSlug(dto.Username);
-
-            var credentials = new UserCredentials
-            {
-                PasswordHash = "",
-                Email = dto.Email,
-            };
-
-            var user = new User
-            {
-                Username = dto.Username,
-                Slug = slug,
-                Credentials = credentials
-            };
-
-            var hashedPassword = new PasswordHasher<User>()
-                .HashPassword(user, dto.Password);
-
-            user.Credentials.PasswordHash = hashedPassword;
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            await SignIn(HttpContext, user);
-
+            await SignIn(HttpContext, result.User);
             return Created();
         }
 
@@ -99,23 +83,14 @@ namespace api.Controllers
                 return BadRequest("User is already authenticated");
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == dto.Username);
-            if (user is null)
+            var result = await _authService.Login(dto);
+            if (result.User is null)
             {
-                return NotFound("User with provided credentials is not found");
+                return NotFound(result.Message);
             }
 
-            var isPasswordValid = new PasswordHasher<User>()
-                .VerifyHashedPassword(user, user.Credentials.PasswordHash, dto.Password);
-
-            if (isPasswordValid != PasswordVerificationResult.Success)
-            {
-                return NotFound("User with provided credentials is not found");
-            }
-
-            await SignIn(HttpContext, user);
-
-            return Ok("Success");
+            await SignIn(HttpContext, result.User);
+            return Ok(result.Message);
         }
 
         /// <summary>

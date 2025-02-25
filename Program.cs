@@ -1,4 +1,5 @@
 using api.Db;
+using api.Services.AuthService;
 using api.Services.SampleService;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -23,10 +24,12 @@ namespace api
             builder.Services.AddDbContext<ZvuchokContext>(options => options.UseSqlite("Data Source=context.db"));
 
             builder.Services.AddScoped<ISampleService, SampleService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(opts =>
                 {
+                    opts.Cookie.Name = "identity_token";
                     opts.ExpireTimeSpan = TimeSpan.FromDays(1);
                     opts.SlidingExpiration = true;
                     opts.AccessDeniedPath = "/";

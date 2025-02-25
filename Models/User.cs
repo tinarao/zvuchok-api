@@ -15,6 +15,7 @@ namespace api.Models
     {
         public int Id { get; set; }
         public required string Username { get; set; }
+        public required string NormalizedUsername { get; set; }
         public required string Slug { get; set; }
         public int Credits { get; set; } = 300;
         public string? Bio { get; set; }

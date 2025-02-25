@@ -84,5 +84,19 @@ namespace api.Services.SampleService
         {
             return $"{username.ToUpper()}_{initialName.ToUpper()}";
         }
+
+        public async Task<Sample?> UpdateSampleMetadata(UpdateSampleMetadataDTO dto)
+        {
+            var sample = await _context.Samples.FindAsync(dto.SampleId);
+            if (sample is null)
+            {
+                return null;
+            }
+
+            sample.Peaks = dto.Peaks;
+            await _context.SaveChangesAsync();
+
+            return sample;
+        }
     }
 }

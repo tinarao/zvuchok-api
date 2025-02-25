@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using static api.Utils.Utilities;
 
 namespace api.Models
 {
@@ -9,8 +10,8 @@ namespace api.Models
         public required string Slug { get; set; }
         public string? Description { get; set; }
         public float DurationMs { get; set; }
-        public int[] Peaks { get; set; } = [];
-
+        public float[] Peaks { get; set; } = [];
+        public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.OnAnalysis;
         public required string SampleFilePath { get; set; }
 
         public string[] Tags { get; set; } = [];

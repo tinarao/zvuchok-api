@@ -25,4 +25,10 @@ namespace api.Dto
         [Required]
         public required IFormFile File { get; set; }
     }
+
+    public class UpdateSampleMetadataDTO
+    {
+        public required int SampleId { get; set; }
+        public required float[] Peaks { get; set; }
+    }
 }
