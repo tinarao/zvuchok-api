@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Db;
 
@@ -10,9 +11,11 @@ using api.Db;
 namespace api.Migrations
 {
     [DbContext(typeof(ZvuchokContext))]
-    partial class ZvuchokContextModelSnapshot : ModelSnapshot
+    [Migration("20250225091044_Fixes")]
+    partial class Fixes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");

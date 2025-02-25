@@ -1,4 +1,6 @@
 using api.Db;
+using api.Services.SampleService;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using System.Text.Json.Serialization;
@@ -20,7 +22,23 @@ namespace api
             builder.Services.AddOpenApi();
             builder.Services.AddDbContext<ZvuchokContext>(options => options.UseSqlite("Data Source=context.db"));
 
+            builder.Services.AddScoped<ISampleService, SampleService>();
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(opts =>
+                {
+                    opts.ExpireTimeSpan = TimeSpan.FromDays(1);
+                    opts.SlidingExpiration = true;
+                    opts.AccessDeniedPath = "/";
+                });
+
             var app = builder.Build();
+
+            app.UseCors(x => x
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .SetIsOriginAllowed(origin => true) // allow any origin
+                    .AllowCredentials()); // allow credentials
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -29,8 +47,16 @@ namespace api
                 app.MapOpenApi();
             }
 
-            app.UseHttpsRedirection();
+            var cookiePolicyOptions = new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+            };
+
+            app.UseCookiePolicy(cookiePolicyOptions);
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseHttpsRedirection();
             app.MapControllers();
 
             app.Run();
