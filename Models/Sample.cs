@@ -11,7 +11,7 @@ namespace api.Models
         public string? Description { get; set; }
         public float DurationMs { get; set; }
         public float[] Peaks { get; set; } = [];
-        public required string UpdateMetadataToken { get; set; } // just to verify the server
+        public required Guid UpdateMetadataToken { get; set; } // just to verify the server
         public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.OnAnalysis;
         public required string SampleFilePath { get; set; }
         public string[] Tags { get; set; } = [];

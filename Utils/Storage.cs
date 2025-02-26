@@ -28,7 +28,7 @@ namespace api.Utils
                 Directory.CreateDirectory(storageDir);
             }
 
-            var filename = $"{Guid.NewGuid()}_{file.FileName}_{Path.GetExtension(file.FileName)}";
+            var filename = $"{Guid.NewGuid()}_{file.FileName}";
             var filepath = Path.Combine(storageDir, filename);
 
             using var stream = new FileStream(filepath, FileMode.Create);

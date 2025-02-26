@@ -11,7 +11,7 @@ using api.Db;
 namespace api.Migrations
 {
     [DbContext(typeof(ZvuchokContext))]
-    [Migration("20250226203046_AddMetadataTokenToSample")]
+    [Migration("20250226205319_AddMetadataTokenToSample")]
     partial class AddMetadataTokenToSample
     {
         /// <inheritdoc />
@@ -85,8 +85,7 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UpdateMetadataToken")
-                        .IsRequired()
+                    b.Property<Guid>("UpdateMetadataToken")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("UserId")

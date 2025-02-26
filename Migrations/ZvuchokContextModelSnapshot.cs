@@ -82,8 +82,7 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UpdateMetadataToken")
-                        .IsRequired()
+                    b.Property<Guid>("UpdateMetadataToken")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("UserId")

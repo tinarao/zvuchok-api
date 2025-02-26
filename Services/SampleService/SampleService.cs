@@ -49,14 +49,13 @@ namespace api.Services.SampleService
             var slug = new SlugHelper().GenerateSlug(sampleName);
 
             var filename = await Storage.SaveFile(dto.File, StorageDirectories.Audio);
-            var metadataToken = new Guid().ToString();
+            var metadataToken = Guid.NewGuid();
 
             var sample = new Sample
             {
                 Name = sampleName,
                 Slug = slug,
                 Description = dto.Description,
-                DurationMs = dto.DurationMs,
                 Genres = dto.Genres,
                 SampleFilePath = filename,
                 AuthorId = authorId,
@@ -103,9 +102,9 @@ namespace api.Services.SampleService
             return $"{username.ToUpper()}_{initialName.ToUpper()}";
         }
 
-        public async Task<Sample?> UpdateSampleMetadata(UpdateSampleMetadataDTO dto)
+        public async Task<Sample?> UpdateSampleMetadata(UpdateSampleMetadataDTO dto, Guid token)
         {
-            var sample = await _context.Samples.FindAsync(dto.SampleId);
+            var sample = await _context.Samples.FirstOrDefaultAsync(u => u.UpdateMetadataToken == token);
             if (sample is null)
             {
                 return null;

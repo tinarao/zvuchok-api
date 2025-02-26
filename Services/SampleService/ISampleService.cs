@@ -9,7 +9,7 @@ namespace api.Services.SampleService
         public Task<Sample?> GetSampleByIdAsync(int id);
         public Task<ReturnsDTOWithSample> CreateSampleAsync(CreateSampleDTO dto, int authorId);
         public Task<Sample> UpdateSampleAsync(Sample sample);
-        public Task<Sample?> UpdateSampleMetadata(UpdateSampleMetadataDTO dto);
+        public Task<Sample?> UpdateSampleMetadata(UpdateSampleMetadataDTO dto, Guid token);
         public Task<Sample> DeleteSampleAsync(int id);
     }
 }
