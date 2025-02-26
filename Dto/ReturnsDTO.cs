@@ -21,7 +21,7 @@ namespace api.Dto
 
     public class ReturnsDTOWithSample : ReturnsDTO
     {
-        public required Sample Sample { get; set; }
+        public Sample? Sample { get; set; }
     }
 
     public class ReturnsDTOWithUser

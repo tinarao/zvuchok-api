@@ -23,24 +23,33 @@ namespace api.Services.SampleService
             return sample;
         }
 
-        public async Task<IReturnsDTO> CreateSampleAsync(CreateSampleDTO dto, int authorId)
+        public async Task<ReturnsDTOWithSample> CreateSampleAsync(CreateSampleDTO dto, int authorId)
         {
             var duplicate = await _context.Samples.FirstOrDefaultAsync(s => s.Name == dto.Name);
             if (duplicate != null)
             {
-                return ReturnsFabric.BadRequest("Sample with this name already exists");
+                return new ReturnsDTOWithSample
+                {
+                    Message = "Sample with this name already exists",
+                    StatusCode = 400,
+                };
             }
 
             var user = await _context.Users.FindAsync(authorId);
             if (user is null)
             {
-                return ReturnsFabric.NotFound("User not found");
+                return new ReturnsDTOWithSample
+                {
+                    Message = "User not found",
+                    StatusCode = 404,
+                };
             }
 
             var sampleName = GenerateSampleName(dto.Name, user.Username);
             var slug = new SlugHelper().GenerateSlug(sampleName);
 
             var filename = await Storage.SaveFile(dto.File, StorageDirectories.Audio);
+            var metadataToken = new Guid().ToString();
 
             var sample = new Sample
             {
@@ -50,21 +59,30 @@ namespace api.Services.SampleService
                 DurationMs = dto.DurationMs,
                 Genres = dto.Genres,
                 SampleFilePath = filename,
-                AuthorId = authorId
+                AuthorId = authorId,
+                UpdateMetadataToken = metadataToken
             };
-
 
             try
             {
                 await _context.Samples.AddAsync(sample);
                 await _context.SaveChangesAsync();
 
-                return ReturnsFabric.Created(sample);
+                return new ReturnsDTOWithSample
+                {
+                    Message = "Sample created successfully",
+                    StatusCode = 201,
+                    Sample = sample
+                };
             }
             catch (Exception)
             {
                 // Log!
-                return ReturnsFabric.InternalServerError();
+                return new ReturnsDTOWithSample
+                {
+                    Message = "Sample creation failed",
+                    StatusCode = 500
+                };
             }
         }
 
