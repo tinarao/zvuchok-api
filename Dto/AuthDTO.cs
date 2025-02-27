@@ -4,6 +4,11 @@ namespace api.Dto
 {
     public class Auth
     {
+        public class TokensDTO
+        {
+            public required string AccessToken { get; set; }
+        }
+
         public class LoginDTO
         {
             [Required]

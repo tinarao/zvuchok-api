@@ -1,14 +1,6 @@
-using System.Security.Claims;
-using api.Db;
-using api.Models;
 using api.Services.AuthService;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Slugify;
 using static api.Dto.Auth;
 
 namespace api.Controllers
@@ -20,33 +12,16 @@ namespace api.Controllers
 
         private readonly IAuthService _authService = authService;
 
-        [HttpGet("verify")]
+        [HttpGet("verify"), Authorize]
         public async Task<ActionResult> Verify()
         {
-            if (HttpContext.User.Identity is null)
+            if (User.Identity == null || User.Identity.Name == null)
             {
                 return Unauthorized();
             }
 
-            if (!HttpContext.User.Identity.IsAuthenticated)
-            {
-                return Unauthorized();
-            }
-
-            var username = HttpContext.User.Identity.Name;
-            if (username is null)
-            {
-                return Unauthorized();
-            }
-
-            var result = await _authService.Verify(username);
-            if (result.User is null)
-            {
-                await HttpContext.SignOutAsync();
-                return Unauthorized();
-            }
-
-            return Ok(result.User);
+            var user = await _authService.Verify(User.Identity.Name);
+            return Ok(user);
         }
 
         [HttpPost("register")]
@@ -64,7 +39,6 @@ namespace api.Controllers
                 return BadRequest("Пользователь с такими данными уже существует");
             }
 
-            await SignIn(HttpContext, result.User);
             return Created();
         }
 
@@ -77,39 +51,13 @@ namespace api.Controllers
                 return UnprocessableEntity("Invalid request");
             }
 
-            var isAuthenticated = HttpContext.User.Identity?.IsAuthenticated;
-            if (isAuthenticated == true)
+            var tokens = await _authService.Login(dto);
+            if (tokens is null)
             {
-                return BadRequest("User is already authenticated");
+                return Unauthorized("Provided credentials don't match our records");
             }
 
-            var result = await _authService.Login(dto);
-            if (result.User is null)
-            {
-                return NotFound(result.Message);
-            }
-
-            await SignIn(HttpContext, result.User);
-            return Ok(result.Message);
-        }
-
-        /// <summary>
-        /// Signs the user in, given the HttpContext and User to sign in
-        /// </summary>
-        /// <param name="ctx">The HttpContext to sign in</param>
-        /// <param name="user">The User to sign in</param>
-        /// <returns>Always return true - this way you can await this thing to run</returns>
-        private async Task<bool> SignIn(HttpContext ctx, User user)
-        {
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.Name, user.Username),
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            };
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-            return true;
+            return Ok(tokens);
         }
     }
 }

@@ -9,5 +9,10 @@ namespace api.Utils
             Rejected,
             OnAnalysis
         }
+
+        public static string NormalizeString(string str)
+        {
+            return str.ToLower();
+        }
     }
 }

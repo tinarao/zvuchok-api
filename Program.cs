@@ -2,8 +2,11 @@ using api.Db;
 using api.Services.AuthService;
 using api.Services.SampleService;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace api
@@ -26,13 +29,19 @@ namespace api
             builder.Services.AddScoped<ISampleService, SampleService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
-            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(opts =>
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    opts.Cookie.Name = "identity_token";
-                    opts.ExpireTimeSpan = TimeSpan.FromDays(1);
-                    opts.SlidingExpiration = true;
-                    opts.AccessDeniedPath = "/";
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                        ValidateAudience = true,
+                        ValidAudience = builder.Configuration["AppSettings:Audience"],
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]))
+                    };
                 });
 
             var app = builder.Build();
@@ -50,16 +59,8 @@ namespace api
                 app.MapOpenApi();
             }
 
-            var cookiePolicyOptions = new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-            };
-
-            app.UseCookiePolicy(cookiePolicyOptions);
-            app.UseAuthentication();
-            app.UseAuthorization();
-
             app.UseHttpsRedirection();
+            app.UseAuthorization();
             app.MapControllers();
 
             app.Run();

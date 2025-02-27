@@ -4,7 +4,7 @@ namespace api.Dto
 {
     public class CreateSampleDTO
     {
-        [Required, StringLength(128, MinimumLength = 3)]
+        [Required, StringLength(256, MinimumLength = 3)]
         public required string Name { get; set; }
 
         public string? Description { get; set; }
