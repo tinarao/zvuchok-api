@@ -30,9 +30,6 @@ namespace api.Dto
             [StringLength(96, MinimumLength = 8, ErrorMessage = "Email must be between 8 and 96 characters long")]
             public required string Email { get; set; }
 
-            [Phone]
-            public required string? PhoneNumber { get; set; }
-
             [Required]
             [StringLength(96, MinimumLength = 8, ErrorMessage = "Password must be between 2 and 96 characters long")]
             public required string Password { get; set; }

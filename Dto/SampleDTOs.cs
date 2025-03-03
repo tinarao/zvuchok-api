@@ -7,6 +7,7 @@ namespace api.Dto
         [Required, StringLength(256, MinimumLength = 3)]
         public required string Name { get; set; }
 
+        [StringLength(512)]
         public string? Description { get; set; }
         public string[] Tags { get; set; } = [];
         public string[] Genres { get; set; } = [];

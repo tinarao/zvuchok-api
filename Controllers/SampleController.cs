@@ -32,7 +32,8 @@ namespace api.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult> Create(CreateSampleDTO dto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult> Create([FromForm] CreateSampleDTO dto)
         {
             if (!ModelState.IsValid)
             {

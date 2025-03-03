@@ -67,6 +67,8 @@ namespace api.Services.SampleService
                 await _context.Samples.AddAsync(sample);
                 await _context.SaveChangesAsync();
 
+                Utilities.SendSampleToAnalysisService(sample);
+
                 return new ReturnsDTOWithSample
                 {
                     Message = "Sample created successfully",

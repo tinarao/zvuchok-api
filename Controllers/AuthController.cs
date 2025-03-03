@@ -20,8 +20,13 @@ namespace api.Controllers
                 return Unauthorized();
             }
 
-            var user = await _authService.Verify(User.Identity.Name);
-            return Ok(user);
+            var result = await _authService.Verify(User.Identity.Name);
+            if (result.User is null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(result.User);
         }
 
         [HttpPost("register")]

@@ -43,7 +43,7 @@ namespace api.Services.AuthService
         public async Task<ReturnsDTOWithUser> Register(RegisterDTO dto)
         {
             var duplicate = await _context.Users
-                .FirstOrDefaultAsync(u => u.NormalizedUsername == Utilities.NormalizeString(dto.Username) || u.Credentials.Email == dto.Email || (u.Credentials.PhoneNumber != null && u.Credentials.PhoneNumber == dto.PhoneNumber));
+                .FirstOrDefaultAsync(u => u.NormalizedUsername == Utilities.NormalizeString(dto.Username) || u.Credentials.Email == dto.Email || (u.Credentials.PhoneNumber != null));
 
             if (duplicate != null)
             {
