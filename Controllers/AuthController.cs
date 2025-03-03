@@ -9,7 +9,6 @@ namespace api.Controllers
     [Route("api/[controller]")]
     public class AuthController(IAuthService authService) : ControllerBase
     {
-
         private readonly IAuthService _authService = authService;
 
         [HttpGet("verify"), Authorize]
