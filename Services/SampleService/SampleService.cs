@@ -57,6 +57,7 @@ namespace api.Services.SampleService
                 Slug = slug,
                 Description = dto.Description,
                 Genres = dto.Genres,
+                Tags = dto.Tags,
                 SampleFilePath = filename,
                 AuthorId = authorId,
                 UpdateMetadataToken = metadataToken

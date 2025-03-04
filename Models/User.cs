@@ -25,7 +25,7 @@ namespace api.Models
         public ICollection<Sample> CreatedSamples { get; set; } = [];
 
         public ICollection<SamplePack> FavoriteSamplePacks { get; set; } = [];
-        public ICollection<Sample> FavoriteSamples { get; set; } = [];
+        public ICollection<Like> FavoriteSamples { get; set; } = [];
         public required UserCredentials Credentials { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]

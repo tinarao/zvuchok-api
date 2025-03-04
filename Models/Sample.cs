@@ -21,7 +21,10 @@ namespace api.Models
         public User Author { get; set; } = null!;
         public required int AuthorId { get; set; }
         public int Downloads { get; set; } = 0;
-        public int Likes { get; set; } = 0;
+
+        public int LikesCount { get; set; } = 0;
+        public ICollection<Like> Likes { get; } = [];
+
         public bool IsFeatured { get; set; } = false;
         public bool IsOnSale { get; set; } = false;
         public bool IsFree { get; set; } = true;

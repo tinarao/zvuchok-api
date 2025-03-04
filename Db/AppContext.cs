@@ -6,6 +6,7 @@ namespace api.Db
     public class ZvuchokContext(DbContextOptions<ZvuchokContext> options) : DbContext(options)
     {
         public DbSet<User> Users => Set<User>();
+        public DbSet<Like> Likes => Set<Like>();
         public DbSet<Sample> Samples => Set<Sample>();
         public DbSet<SignedUrl> SignedUrls => Set<SignedUrl>();
         public DbSet<SamplePack> SamplePacks => Set<SamplePack>();
@@ -43,6 +44,34 @@ namespace api.Db
 
             modelBuilder.Entity<User>()
                 .Property(u => u.CreatedAt)
+                .HasDefaultValueSql("DATETIME('now')");
+
+            //
+
+            modelBuilder.Entity<Like>()
+                .HasIndex(l => l.SampleId);
+
+            modelBuilder.Entity<Like>()
+                .HasIndex(l => l.UserId);
+
+            modelBuilder.Entity<Like>()
+                .HasIndex(l => new { l.SampleId, l.UserId })
+                .IsUnique();
+
+            modelBuilder.Entity<Like>()
+                .HasOne(l => l.Sample)
+                .WithMany(t => t.Likes)
+                .HasForeignKey(l => l.SampleId)
+                .IsRequired();
+
+            modelBuilder.Entity<Like>()
+                .HasOne(l => l.User)
+                .WithMany(u => u.FavoriteSamples)
+                .HasForeignKey(l => l.UserId)
+                .IsRequired();
+
+            modelBuilder.Entity<Like>()
+                .Property(l => l.CreatedAt)
                 .HasDefaultValueSql("DATETIME('now')");
 
             //
