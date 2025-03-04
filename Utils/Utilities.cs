@@ -12,6 +12,24 @@ namespace api.Utils
             OnAnalysis
         }
 
+        public enum FileKind
+        {
+            Audio,
+            Image
+        }
+
+        public static string? GetCtxUsername(HttpContext ctx)
+        {
+            var identity = ctx.User.Identity;
+            if (identity == null || !identity.IsAuthenticated)
+            {
+                return null;
+            }
+
+            return identity.Name;
+
+        }
+
         public static string NormalizeString(string str)
         {
             return str.ToLower();

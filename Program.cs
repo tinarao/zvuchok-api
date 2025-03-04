@@ -1,6 +1,7 @@
 using api.Db;
 using api.Services.AuthService;
 using api.Services.SampleService;
+using api.Services.SignedUrl;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ namespace api
 
             builder.Services.AddScoped<ISampleService, SampleService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ISignedUrlService, SignedUrlService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

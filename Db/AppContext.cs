@@ -5,9 +5,10 @@ namespace api.Db
 {
     public class ZvuchokContext(DbContextOptions<ZvuchokContext> options) : DbContext(options)
     {
-        public DbSet<Sample> Samples => Set<Sample>();
-        public DbSet<SamplePack> SamplePacks => Set<SamplePack>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<Sample> Samples => Set<Sample>();
+        public DbSet<SignedUrl> SignedUrls => Set<SignedUrl>();
+        public DbSet<SamplePack> SamplePacks => Set<SamplePack>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
