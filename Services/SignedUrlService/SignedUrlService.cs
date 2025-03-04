@@ -16,15 +16,19 @@ namespace api.Services.SignedUrl
                 return null;
             }
 
+            var signedUrlGuid = Guid.NewGuid();
+
             if (kind == FileKind.Audio)
             {
-                var signedUrlGuid = Guid.NewGuid();
                 var filepath = sample.SampleFilePath;
                 var signedUrl = new Models.SignedUrl
                 {
                     FilePath = sample.SampleFilePath,
                     Url = signedUrlGuid
                 };
+
+                _context.SignedUrls.Add(signedUrl);
+                await _context.SaveChangesAsync();
 
                 return signedUrl.Url.ToString();
             }
@@ -44,9 +48,15 @@ namespace api.Services.SignedUrl
             return null;
         }
 
-        public Task<string?> GetFilePathByUrlAsync(string url)
+        public async Task<string?> GetFilePathByUrlAsync(Guid url)
         {
-            throw new NotImplementedException();
+            var _record = await _context.SignedUrls.FirstOrDefaultAsync(su => su.Url == url);
+            if (_record is null)
+            {
+                return null;
+            }
+
+            return _record.FilePath;
         }
     }
 }

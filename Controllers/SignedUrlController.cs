@@ -35,9 +35,8 @@ namespace api.Controllers
             return Ok(signedUrl);
         }
 
-        [Authorize]
         [HttpGet("{signedUrl}")]
-        public async Task<ActionResult> GetFile(string signedUrl)
+        public async Task<ActionResult> GetFile(Guid signedUrl)
         {
             var _filepath = await _signedUrlService.GetFilePathByUrlAsync(signedUrl);
             if (_filepath is null)
